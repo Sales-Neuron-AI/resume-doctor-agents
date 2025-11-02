@@ -1,6 +1,6 @@
 import { Agent } in '@openserv-labs/sdk';
 import { z } from 'zod';
-import { FirecrawlApp } from 'firecrawl';
+import { FirecrawlApp } from '@mendable/firecrawl-js';
 import 'dotenv/config';
 
 // 1. Initialize the Agent
