@@ -48,7 +48,79 @@ agent.addCapability({
     }
   }
 });
+// --- ADDING NEW CAPABILITIES FOR PROFILE MANAGEMENT ---
 
+// CAPABILITY 2: Store a new file in the workspace
+agent.addCapability({
+  name: 'storeFile',
+  description: 'Stores a file in the OpenServ workspace. Use this to save CVs, LinkedIn data, etc.',
+  schema: z.object({
+    path: z.string().describe('The full path and filename. e.g., "master_cv.pdf" or "user_data/linkedin.json"'),
+    fileContent: z.string().describe('The text content of the file to be saved.')
+  }),
+  async run({ args, action }) {
+    // This uses the built-in SDK power to upload files
+    try {
+      if (!action || !('workspace' in action)) {
+        throw new Error('Action context is missing or invalid.');
+      }
+      
+      await agent.uploadFile({
+        workspaceId: action.workspace.id,
+        path: args.path,
+        file: Buffer.from(args.fileContent, 'utf-8') // Convert text to a file buffer
+      });
+      
+      console.log(`File successfully stored at: ${args.path}`);
+      return `File stored successfully at ${args.path}.`;
+      
+    } catch (error) {
+      console.error('File storage Error:', error);
+      return 'Error storing file.';
+    }
+  }
+});
+
+// CAPABILITY 3: Get a file's content from the workspace
+agent.addCapability({
+  name: 'getFile',
+  description: 'Retrieves the text content of a specific file from the OpenServ workspace.',
+  schema: z.object({
+    path: z.string().describe('The exact path of the file to retrieve. e.g., "master_cv.pdf"')
+  }),
+  async run({ args, action }) {
+    try {
+      if (!action || !('workspace' in action)) {
+        throw new Error('Action context is missing or invalid.');
+      }
+
+      // Use the built-in SDK to get all files
+      const files = await agent.getFiles({ workspaceId: action.workspace.id });
+      
+      // Find the specific file
+      const foundFile = files.find(file => file.path === args.path);
+      
+      if (!foundFile) {
+        throw new Error(`File not found at path: ${args.path}`);
+      }
+
+      // We need to fetch the file's content
+      // This is a bit of a workaround: we fetch the URL
+      const response = await fetch(foundFile.fullUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch file content from ${foundFile.fullUrl}`);
+      }
+      const textContent = await response.text();
+      
+      console.log(`File successfully retrieved: ${args.path}`);
+      return textContent;
+
+    } catch (error) {
+      console.error('File retrieval Error:', error);
+      return `Error retrieving file: ${error.message}`;
+    }
+  }
+});
 // 3. Start the Server
 agent.start();
 
