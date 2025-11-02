@@ -116,8 +116,12 @@ agent.addCapability({
       return textContent;
 
     } catch (error) {
-      console.error('File retrieval Error:', error);
-      return `Error retrieving file: ${error.message}`;
+  console.error('File retrieval Error:', error);
+  // FIX: We must check the type of 'error' before using .message
+  if (error instanceof Error) {
+    return `Error retrieving file: ${error.message}`;
+  }
+  return 'An unknown error occurred while retrieving the file.';
     }
   }
 });
