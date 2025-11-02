@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@openserv-labs/sdk": "^1.8.2",
-    "firecrawl": "^0.0.12",
+    "@mendable/firecrawl-js": "^0.0.36",
     "zod": "^3.22.4",
     "dotenv": "^16.3.1"
   },
