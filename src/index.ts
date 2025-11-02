@@ -1,4 +1,4 @@
-import { Agent } in '@openserv-labs/sdk';
+import { Agent } from '@openserv-labs/sdk';
 import { z } from 'zod';
 import { FirecrawlApp } from '@mendable/firecrawl-js';
 import 'dotenv/config';
